@@ -1,0 +1,6 @@
+engine/
+__pycache__/
+*.apk
+*.jks
+.gradle/
+local.properties
