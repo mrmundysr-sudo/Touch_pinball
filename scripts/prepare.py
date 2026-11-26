@@ -32,22 +32,28 @@ edit(java+'ui/screens/landing/LandingScreen.kt','    if (showConfirmDialog) {','
 method='''    /** Publish to the library only after the table and every companion file has been copied. */
     suspend fun importDownloadedTable(vpxFile: File, extras: Map<String, File>): Table? = withContext(Dispatchers.IO) {
         require(extras.keys.all { org.vpinball.app.download.ArchiveCatalog.safePath(it) })
-        val table = importVPX(vpxFile.absolutePath) ?: return@withContext null
-        val tableDir = File(table.path).parent ?: return@withContext null
+        val folder = getUniqueFolder(vpxFile.nameWithoutExtension.replace("_", " "))
+        val tableDir = buildPath(folder)
+        var imported: Table? = null
         try {
+            check(fileOps.createDirectory(tableDir)) { "Could not create table folder" }
+            val target = buildPath("$folder/${vpxFile.name}")
+            check(fileOps.copy(vpxFile.absolutePath, target)) { "Could not install table" }
             for ((relative, source) in extras) {
-                val dest = buildPath("$tableDir/$relative")
-                File(relative).parent?.let { fileOps.createDirectory(buildPath("$tableDir/$it")) }
+                val dest = buildPath("$folder/$relative")
+                File(relative).parent?.let { fileOps.createDirectory(buildPath("$folder/$it")) }
                 check(fileOps.copy(source.absolutePath, dest)) { "Failed to install $relative" }
             }
+            val table = createTable(target)
+            imported = table
             _tables.value = _tables.value + table
             saveTables()
             withContext(Dispatchers.Main) { LandingScreenViewModel.triggerAddTables(listOf(table)) }
             table
         } catch (e: Exception) {
-            _tables.value = _tables.value.filterNot { it.uuid == table.uuid }
+            _tables.value = _tables.value.filterNot { it.uuid == imported?.uuid }
             saveTables()
-            fileOps.deleteDirectory(buildPath(tableDir))
+            fileOps.deleteDirectory(tableDir)
             throw e
         }
     }
