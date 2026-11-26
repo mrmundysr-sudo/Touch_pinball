@@ -12,11 +12,11 @@ Tables with dynamic ROM selection or failed script extraction are marked as pote
 
 ## Source and build
 
-`python3 scripts/prepare.py` checks out **vpinball/vpinball at d16258d98ce90155d679b7d5ad9de2261e313adc** into `engine/`, applies checked integration patches, and copies `touch/overlay/`. This repository tracks all Touch source changes and a pinned upstream revision, rather than duplicating the upstream binary assets. Edit Touch files here; generated `engine/` is disposable. `prepare.py` fails if an integration point drifts.
+`python3 scripts/prepare.py` checks out **vpinball/vpinball at 320985d9b056ba2620f759b4f8463956d10956ad** into `engine/`, applies checked integration patches, and copies `touch/overlay/`. This repository tracks all Touch source changes and a pinned upstream revision, rather than duplicating the upstream binary assets. Edit Touch files here; generated `engine/` is disposable. `prepare.py` fails if an integration point drifts.
 
 The GitHub Actions **Touch Pinball APK** workflow compiles the UI, runs downloader unit tests, builds native dependencies and VPX, assembles/signs the APK, verifies native player inclusion and signing, and publishes a prerelease with checksums and complete materialized source. A native build failure never publishes an APK. `touch/development-keystore.b64` is an intentionally public **development-only** key for consistent personal sideload updates; it is not a production signing secret.
 
-To build locally, install the prerequisites described in upstream `make/README.md`, Android SDK 37, NDK 29.0.14206865 and JDK 21. Prepare the source, run `engine/platforms/android-arm64-v8a/external.sh` from `engine/`, configure/build CMake as in the workflow, then run `./gradlew assembleMobileDebug` from `engine/apps/android`. Restore the provided development key to `~/.android/debug.keystore` for compatible updates.
+To build locally, install the prerequisites described in upstream `make/README.md`, Android SDK 35, NDK 28.2.13676358 and JDK 21. Prepare the source, run `engine/platforms/android-arm64-v8a/external.sh` from `engine/`, configure/build CMake as in the workflow, then run `./gradlew assembleMobileDebug` from `engine/standalone/android`. Restore the provided development key to `~/.android/debug.keystore` for compatible updates.
 
 ## Licensing and credits
 
