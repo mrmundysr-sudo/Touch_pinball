@@ -2,6 +2,9 @@
 package org.vpinball.app.download
 
 import java.io.InputStream
+import java.io.StringReader
+import org.xml.sax.InputSource
+import org.xml.sax.SAXException
 import java.net.URLEncoder
 import javax.xml.parsers.DocumentBuilderFactory
 import org.w3c.dom.Element
@@ -28,14 +31,15 @@ data class ArchiveCatalog(val tables: List<ArchiveTable>, val roms: Map<String, 
         }
 
         fun parse(input: InputStream): ArchiveCatalog {
-            val factory = DocumentBuilderFactory.newInstance().apply {
-                setFeature("http://apache.org/xml/features/disallow-doctype-decl", true)
-                setFeature("http://xml.org/sax/features/external-general-entities", false)
-                setFeature("http://xml.org/sax/features/external-parameter-entities", false)
-                isExpandEntityReferences = false
-                isXIncludeAware = false
-            }
-            val doc = factory.newDocumentBuilder().parse(input)
+            // Android's Harmony parser does not support Xerces security feature flags.
+            // Parse a UTF-8 character source after rejecting DTDs/entities, on every platform.
+            val bytes = input.readNBytes(32 * 1024 * 1024 + 1)
+            require(bytes.size <= 32 * 1024 * 1024) { "Catalog is too large" }
+            val xml = bytes.toString(Charsets.UTF_8)
+            require(!xml.contains("<!DOCTYPE", true) && !xml.contains("<!ENTITY", true)) { "External XML declarations are forbidden" }
+            val builder = DocumentBuilderFactory.newInstance().newDocumentBuilder()
+            builder.setEntityResolver { _, _ -> throw SAXException("External XML entities are forbidden") }
+            val doc = builder.parse(InputSource(StringReader(xml)))
             val files = mutableListOf<ArchiveFile>()
             val nodes = doc.getElementsByTagName("file")
             for (i in 0 until nodes.length) {

@@ -26,7 +26,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y bison autoconf automake libtool nasm libx11-dev libgl1-mesa-dev libglu1-mesa-dev
-          sdkmanager 'platforms;android-37' 'build-tools;36.0.0' 'ndk;29.0.14206865'
+          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" 'platforms;android-37' 'build-tools;36.0.0' 'ndk;29.0.14206865'
           python3 -m pip install --user --break-system-packages 'cmake>=4.0,<5'
       - name: Prepare pinned upstream and Touch source
         run: python3 scripts/prepare.py
