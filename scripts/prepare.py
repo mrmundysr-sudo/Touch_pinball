@@ -21,7 +21,8 @@ java=app+'src/main/java/org/vpinball/app/'
 edit(app+'build.gradle.kts','applicationId = "org.vpinball.vpinball_bgfx"','applicationId = "com.mundymorning.touchpinball"')
 edit(app+'build.gradle.kts','    implementation(libs.androidx.core.ktx)','    testImplementation("junit:junit:4.13.2")\n    implementation(libs.androidx.core.ktx)')
 edit(app+'src/main/res/values/strings.xml','<string name="app_name">Visual Pinball</string>','<string name="app_name">Touch Pinball</string>')
-edit(java+'di/Modules.kt','    viewModelOf(::LandingScreenViewModel)','    viewModelOf(::LandingScreenViewModel)\n    viewModel { org.vpinball.app.ui.screens.landing.TableDownloaderViewModel(get()) }')
+edit(java+'di/Modules.kt','import org.vpinball.app.VPinballModel','import org.vpinball.app.VPinballModel\nimport org.vpinball.app.ui.screens.landing.TableDownloaderViewModel')
+edit(java+'di/Modules.kt','    viewModelOf(::LandingScreenViewModel)','    viewModelOf(::LandingScreenViewModel)\n    viewModelOf(::TableDownloaderViewModel)')
 edit(java+'ui/screens/landing/ImportTableDropdownMenu.kt','    onFiles: () -> Unit,','    onArchive: () -> Unit = {},\n    onFiles: () -> Unit,')
 edit(java+'ui/screens/landing/ImportTableDropdownMenu.kt','    DropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {',
      '    DropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {\n        DropdownMenuItem(text = { Text("Download from Archive.org") }, onClick = onArchive)\n        HorizontalDivider()')
