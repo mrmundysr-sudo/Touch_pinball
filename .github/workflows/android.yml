@@ -67,7 +67,7 @@ jobs:
           cp README.md dist/README.md
           cp engine/LICENSE dist/VPX-LICENSE
           sha256sum dist/*.apk > dist/SHA256SUMS.txt
-          tar --exclude=.git --exclude=external --exclude=build --exclude=.gradle --exclude=jniLibs --exclude=dist -czf dist/Touch-Pinball-source.tar.gz engine touch scripts .github README.md
+          tar --exclude=.git --exclude=build --exclude=.gradle --exclude=jniLibs --exclude=dist --exclude='*.o' --exclude='*.a' --exclude='*.so' --exclude='*.tar.gz' -czf dist/Touch-Pinball-source.tar.gz engine touch scripts .github README.md
       - uses: actions/upload-artifact@v7
         with:
           name: Touch-Pinball-APK-and-source
@@ -76,4 +76,4 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create personal-${{ github.run_number }} dist/* --prerelease --title 'Touch Pinball personal build ${{ github.run_number }}' --notes "Android 13+, ARM64. Personal sideload build. Source commit: $GITHUB_SHA. Includes Archive.org catalog, verified downloads, companion installation, and VPX mobile player. No table content is bundled."
+          gh release create personal-${{ github.run_number }} dist/* --target "$GITHUB_SHA" --prerelease --title 'Touch Pinball personal build ${{ github.run_number }}' --notes "Android 13+, ARM64. Personal sideload build. Source commit: $GITHUB_SHA. Includes Archive.org catalog, verified downloads, companion installation, and VPX mobile player. No table content is bundled."
