@@ -45,7 +45,7 @@ data class ArchiveCatalog(val tables: List<ArchiveTable>, val roms: Map<String, 
                 val sha = el.getElementsByTagName("sha1").item(0)?.textContent?.trim().orEmpty()
                 if (safePath(path) && size > 0 && sha.matches(Regex("[0-9a-fA-F]{40}"))) files.add(ArchiveFile(path, size, sha))
             }
-            val groups = files.filter { it.path.startsWith("tables/") }.groupBy { it.path.substringBeforeLast('/') }
+            val groups = files.filter { it.path.startsWith("tables/") }.groupBy { it.path.split('/').take(2).joinToString("/") }
             val tables = groups.flatMap { (folder, group) ->
                 group.filter { it.name.endsWith(".vpx", true) }.map { table ->
                     // Keep all auxiliary files and their relative paths, including VBS patches, music and backglass.
